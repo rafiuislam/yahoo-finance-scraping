@@ -139,9 +139,26 @@ for s in quarterly_bs:
             continue
     quarterly_bs_stmts.append(statement)
 
-print(annual_bs_stmts[0])
+# print(annual_bs_stmts[0])
 # print(quarterly_bs_stmts[0])
 
 
 
 # profile Data:
+
+headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
+response = requests.get(url_profile.format(stock,stock),headers=headers)
+
+soup = BeautifulSoup(response.text, 'html.parser')
+
+pattern = re.compile(r'\s--\sData\s--\s')
+script_data = soup.find('script', text=pattern).contents[0]
+
+start = script_data.find("context")-2
+
+json_data = json.loads(script_data[start:-12])
+
+# print(json_data['context']['dispatcher']['stores']['QuoteSummaryStore']['assetProfile']['companyOfficers']) #Key Executives
+# print(json_data['context']['dispatcher']['stores']['QuoteSummaryStore']['assetProfile']['longBusinessSummary']) #Description
+# print(json_data['context']['dispatcher']['stores']['QuoteSummaryStore']['secFilings']['filings']) #sec filings
+print(json_data['context']['dispatcher']['stores']['QuoteSummaryStore']['summaryDetail']) #summary details
