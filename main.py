@@ -8,6 +8,7 @@ import requests
 url_stats = 'https://finance.yahoo.com/quote/{}/key-statistics?p={}'
 url_profile = 'https://finance.yahoo.com/quote/{}/profile?p={}'
 url_financials = 'https://finance.yahoo.com/quote/{}/financials?p={}'
+url_historicals = 'https://finance.yahoo.com/quote/{}/history?p={}'
 
 stock = 'AAPL'
 
@@ -178,4 +179,45 @@ start = script_data.find("context")-2
 
 json_data = json.loads(script_data[start:-12])
 
-print(json_data['context']['dispatcher']['stores']['QuoteSummaryStore']['defaultKeyStatistics']) #data
+# print(json_data['context']['dispatcher']['stores']['QuoteSummaryStore']['defaultKeyStatistics']) #most data
+
+
+# Historical Data:
+
+
+# headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
+# response = requests.get(url_historicals.format(stock,stock),headers=headers)
+
+# soup = BeautifulSoup(response.text, 'html.parser')
+
+# pattern = re.compile(r'\s--\sData\s--\s')
+# script_data = soup.find('script', text=pattern).contents[0]
+
+# start = script_data.find("context")-2
+
+# json_data = json.loads(script_data[start:-12])
+
+# print(json_data['context']['dispatcher']['stores']['QuoteSummaryStore'].keys())
+
+
+stock_url ='https://query1.finance.yahoo.com/v7/finance/download/{}?'
+
+params = {
+    'period1': '1600707764',
+    'period2':'1632243764',
+    'interval': '1d',
+    'events': 'history',
+}
+params = {
+    'range': '1y',
+    'interval': '1wk',
+    'events': 'history',
+}
+headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
+response = requests.get(stock_url.format(stock), params=params ,headers=headers)
+
+file = StringIO(response.text)
+reader = csv.reader(file)
+data = list(reader)
+for row in data[:5]:
+    print(row) 
